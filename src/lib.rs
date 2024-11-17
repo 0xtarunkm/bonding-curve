@@ -1,20 +1,10 @@
 use std::f64::consts::E;
 
-// const K: f64 = 0.0000000284201;
-const K: f64 = 0.0000000084201;
-const INITIAL_PRICE: f64 = 0.000000028;
+const K: f64 = 2.8e-9;
 
-pub fn calculate_price(amount: f64, tokens_sold: f64) -> f64 {
-    let current_price = INITIAL_PRICE * E.powf(K * tokens_sold as f64);
-    let total_price = (current_price * (E.powf(K * amount as f64) - 1.0)) / K;
-    
-    // current_price *= E.powf(K * amount as f64);
-    
-    total_price
-}
-
-pub fn get_current_price(tokens_sold: f64) -> f64 {
-    INITIAL_PRICE * E.powf(K * tokens_sold as f64)
+pub fn cal_price(x: i32, initial: &f64) -> f64 {
+    let tot_price = (initial * (E.powf(K * x as f64) - 1.0)) / K;
+    tot_price
 }
 
 #[cfg(test)]
@@ -23,23 +13,22 @@ mod tests {
 
     #[test]
     fn test_price_calculation() {
-        let test_amounts = vec![
-            0.1, 0.2, 0.5, 2.0, 10.0, 100.0, 200.0, 1000.0, 10000.0, 20000.0, 210000.0, 
-            1000000.0, 20000000.0, 30000000.0, 200000000.0,1.0, 2.0, 1000000.0, 300000000.0, 200000000.0
-        ];
-        
-        let mut tokens_sold = 0.0;
-        
-        for &amount in test_amounts.iter() {
-            let price = calculate_price(amount, tokens_sold);
-            println!(
-                "Lot: {} | Total cost: {:.12} | Cost per token: {:.12} | Current Price: {:.12}",
-                amount,
-                price,
-                price / amount as f64,
-                get_current_price(tokens_sold)
-            );
-            tokens_sold += amount;
-        }
+        let amts = vec![
+        2.0, 10.0, 100.0, 200.0, 1000.0, 10000.0, 20000.0, 
+        210000.0, 1000000.0, 20000000.0, 30000000.0, 2.0, 4.0, 
+        100000000.0, 1.0, 200000000.0, 300000000.0
+    ];
+    let mut curr_price = 2.8e-8;
+
+    for amt in amts {
+        let price = cal_price(amt as i32, &curr_price);
+        println!(
+            "lot: {:.1} : Total cost: {:.12} | Cost per token: {:.12}", 
+            amt, 
+            price, 
+            price / amt
+        );
+        curr_price = curr_price * E.powf(K * amt);
+    }
     }
 }
